@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Solar System Simulation</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background-color: #000;
+    }
+    canvas {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="solarSystemCanvas"></canvas>
+  <script>
+    const canvas = document.getElementById('solarSystemCanvas');
+    const ctx = canvas.getContext('2d');
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const solarSystemData = {
+      sun: {
+        radius: 20,
+        color: '#ffcc00',
+        position: { x: canvas.width / 2, y: canvas.height / 2 }
+      },
+      mercury: {
+        radius: 5,
+        color: '#bfbfbf',
+        distance: 50,
+        orbitalPeriod: 88,
+        axialTilt: 0,
+        rotationPeriod: 58,
+        angle: 0
+      },
+      venus: {
+        radius: 8,
+        color: '#ffd700',
+        distance: 80,
+        orbitalPeriod: 225,
+        axialTilt: 177.4,
+        rotationPeriod: 243,
+        angle: 0
+      },
+      earth: {
+        radius: 8,
+        color: '#6495ed',
+        distance: 120,
+        orbitalPeriod: 365,
+        axialTilt: 23.4,
+        rotationPeriod: 1,
+        angle: 0
+      },
+      // Define data for other planets...
+    };
+
+    function drawPlanet(planet) {
+      const { radius, color, position } = planet;
+      ctx.beginPath();
+      ctx.arc(position.x, position.y, radius, 0, Math.PI * 2);
+      ctx.fillStyle = color;
+      ctx.fill();
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (const planetName in solarSystemData) {
+        if (planetName !== 'sun') {
+          const planet = solarSystemData[planetName];
+          const { distance, angle } = planet;
+          const orbitX = solarSystemData.sun.position.x + distance * Math.cos(angle);
+          const orbitY = solarSystemData.sun.position.y + distance * Math.sin(angle);
+          planet.position = { x: orbitX, y: orbitY };
+          drawPlanet(planet);
+        }
+      }
+      drawPlanet(solarSystemData.sun);
+    }
+
+    function animate() {
+      requestAnimationFrame(animate);
+      for (const planetName in solarSystemData) {
+        if (planetName !== 'sun') {
+          const planet = solarSystemData[planetName];
+          const { orbitalPeriod, rotationPeriod } = planet;
+          planet.angle += 2 * Math.PI / (orbitalPeriod * 60); // 60 frames per second
+          if (planet.angle >= 2 * Math.PI) {
+            planet.angle -= 2 * Math.PI;
+          }
+        }
+      }
+      draw();
+    }
+
+    animate();
+  </script>
+</body>
+  </html>
+  
